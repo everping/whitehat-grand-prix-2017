@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+	<meta charset="UTF-8">
+	<title>Login</title>
+	<link href="/assets/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<form>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$.get("/api/logout", function(data, status, xhr) {}, "json", false);
+		window.location.href = "/login.html";
+	</script>
+</body>
+</html>

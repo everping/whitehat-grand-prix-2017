@@ -1,0 +1,10 @@
+# Python
+*.pyc
+
+#IDE
+.idea/
+*.iml
+__pycache__/
+
+# Log
+*.log

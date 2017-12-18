@@ -1,0 +1,36 @@
+upstream whitehat1 {
+    server 127.0.0.1:8080       max_fails=3 fail_timeout=30s;
+}
+
+server {
+    listen          80;
+    server_name     _;
+
+	# Turn off version number displayed on all auto generated error pages
+	server_tokens off;
+
+    keepalive_timeout       70;
+
+    charset off;
+
+    access_log /var/log/nginx/whitehat1_access.log;
+    error_log  /var/log/nginx/whitehat1_error.log;
+
+    # max upload size
+    client_max_body_size 1M;
+
+    # Send all requests to the perl application
+    location / {
+        proxy_pass         http://whitehat1;
+
+        proxy_set_header   Host                 $host;
+        proxy_set_header   X-Real-IP            $remote_addr;
+        proxy_set_header   REMOTE_HOST          $remote_addr;
+        proxy_set_header   REMOTE_USER          $remote_user;
+        proxy_set_header   X-Forwarded-For      $proxy_add_x_forwarded_for;
+        proxy_set_header   X-FORWARDED-PROTOCOL $scheme;
+
+        proxy_redirect off;
+    }
+
+}

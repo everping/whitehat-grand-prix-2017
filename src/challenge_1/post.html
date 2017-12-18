@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+	<meta charset="UTF-8">
+	<title>Post</title>
+	<link href="/assets/bootstrap.min.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+	<script>
+		var escape_html = (function () {
+    	var chr = { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+	    return function (text) {
+        	return text.replace(/[\"&<>]/g, function (a) { return chr[a]; });
+    	};
+		}());
+
+		var current_page = 0;
+		var post_id = parseInt(window.location.hash.substring(1));
+		$(document).ready(function(){
+			if (isNaN(post_id)){
+				window.location.href = "/index.html";
+			} else {
+				update_post();
+				update_comments();
+			}
+		});
+
+		function update_post(){
+			$.post("/api/post?post_id="+post_id, 
+				function(data, status, xhr) {
+					if (xhr.status == 200){
+						$("#post-title").text(data["title"]);
+						$("#post-author").text(data["username"]);
+						$("#post-content").text(data["content"]);
+					} else {
+						window.location.href = "/index.html";
+					}
+				}, "json", false).fail(function(data, status, xhr) {
+					window.location.href = "/index.html";
+			});
+		}
+
+		function update_comments(){
+			$.post("/api/comments?post_id="+post_id+"&page="+current_page, 
+				function(data, status, xhr) {
+					$("#comments").empty();
+					for (var i=0; i<data["comments"].length; i++) {
+						var comment_data = data["comments"][i];
+						html = '<div class="media mb-4" id="comments2">';
+						html += '<img class="d-flex mr-3 rounded-circle" src="http://icons.iconarchive.com/icons/mathijssen/tuxlets/64/Frankenstein-Tux-icon.png" alt="">\n';
+						html += '<div class="media-body">';
+						html += '<h5 class="mt-0">' + escape_html(comment_data["username"]) + '</h5>';
+						html += '<p>' + escape_html(comment_data["content"]) + '</p></div></div>';
+						$("#comments").append(html);
+					}
+				}, "json", false);
+		}
+	</script>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+		<div class="container">
+		<a class="navbar-brand" href="#">BUZZZZZZZZ</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarResponsive">
+			<ul class="navbar-nav ml-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="/index.html">Posts
+				<span class="sr-only">(current)</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/register.html">Register</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/login.html">Login</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/logout.html">Logout</a>
+			</li>
+			</ul>
+		</div>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8">
+				<h1 class="mt-4" id="post-title"></h1>
+				<p class="lead">
+				by
+				<a href="" id="post-author"></a>
+			</p>
+			<hr>
+				<p class="lead" id="post-content">
+				</p>
+			<hr>
+				<div class="card my-4">
+				<h5 class="card-header">Leave a Comment:</h5>
+					<div class="card-body">
+						<form>
+							<div class="form-group">
+								<textarea class="form-control" rows="3" id="comment-area"></textarea>
+							</div>
+							<button type="submit" class="btn btn-primary" id="comment-button">Submit</button>
+						</form>
+					</div>
+				</div>
+
+			<div id="comments">
+			</div>
+			<div class="btn-group">
+				<input type="button" value="Previous" id="prevtab" class="btn btn-primary">
+				<input type="button" value="Next" id="nexttab" class="btn btn-primary">
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#nexttab").click(function(){
+			current_page += 1;
+			update_comments();
+		});
+		$("#prevtab").click(function(){
+			current_page -= 1;
+			update_comments();
+		});
+		$("#comment-button").click(function(){
+			$.post("/api/comment", JSON.stringify({post_id: post_id, content:$("textarea#comment-area").val()}),
+				function(data, status, xhr) {
+					$("textarea#comment-area").val("");
+					if (xhr.status == 200){
+						location.reload();
+					} else {
+						alert("Comment failed")
+					}
+			}, "json", false).fail(function(data, status, xhr) {
+				alert("Comment failed");
+			});
+		});
+	</script>
+</body>
+
+</html>

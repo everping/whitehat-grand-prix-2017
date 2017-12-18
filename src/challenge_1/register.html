@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <link href="/assets/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+    <div class="container">
+    <a class="navbar-brand" href="#">BUZZZZZZZZ</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/index.html">Posts</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/register.html">Register</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/login.html">Login
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/logout.html">Logout</a>
+      </li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+  <div class="container">   
+    <div id="registerbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+      <div class="panel panel-info" >
+        <div class="panel-heading">
+          <div class="panel-title">Register</div>
+        </div>     
+        <div style="padding-top:30px" class="panel-body" >
+          <div style="display:none" id="register-alert" class="alert alert-danger col-sm-12"></div>
+          <form id="registerform" class="form-horizontal" role="form">
+            <div id="register-failed-alert" style="display:none" class="alert alert-danger">
+              <span>Register failed</span>
+            </div>
+            <div id="register-success-alert" style="display:none" class="alert alert-success">
+              <span>Register successfully</span>
+            </div>
+            <div style="margin-bottom: 25px" class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+              <input id="register-username" type="text" class="form-control" name="username" value="" placeholder="username">
+            </div>
+            <div style="margin-bottom: 25px" class="input-group">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+              <input id="register-password" type="password" class="form-control" name="password" placeholder="password">
+            </div>
+            <div style="margin-top:10px" class="form-group">
+              <div class="col-sm-12 controls">
+                <a id="btn-register" href="#" class="btn btn-success">Register</a>
+              </div>
+            </div>
+          </form>    
+        </div>
+      </div>  
+    </div>
+    </div> 
+  </div>
+    
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $("#btn-register").click(function(){
+        var username = $("#register-username").val();
+        var password = $("#register-password").val();
+        if( username != '' && password != ''){
+          $.post("/api/register", JSON.stringify({username: username, password:password}),
+            function(data, status, xhr) {
+              if (xhr.status == 200){
+                $("#register-success-alert").show();
+                $("#register-failed-alert").hide();
+                setTimeout(function(){
+                  window.location.href = "/index.html";
+                }, 1000);
+              } else {
+                $("#register-success-alert").hide();
+                $("#register-failed-alert").show();
+              }
+          }, "json", false).fail(function(data, status, xhr) {
+            $("#register-success-alert").hide();
+            $("#register-failed-alert").show();
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
