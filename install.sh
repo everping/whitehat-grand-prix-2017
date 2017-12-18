@@ -6,7 +6,7 @@ GROUP_NAME="whitehat"
 TMP_DIR="/root/whitehat"
 ETC_DIR="/etc/whitehat"
 RUN_DIR="/run/whitehat"
-GIT_URL="https://github.com/everping/whitehat_grand_prix_2017.git"
+GIT_URL="https://github.com/everping/whitehat-grand-prix-2017.git"
 
 
 install_dependencies() {
